@@ -1,0 +1,4 @@
+
+ALTER TABLE `registration` ADD `status` SMALLINT(1) NOT NULL DEFAULT '1' AFTER `project_3`;
+
+ALTER TABLE `proposal` ADD `status` SMALLINT(1) NOT NULL DEFAULT '1' AFTER `updated_by`;
