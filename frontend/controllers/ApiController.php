@@ -460,8 +460,8 @@ class ApiController extends Controller
 
                 // send mail to commette head
 
-                $data['subject'] = 'Registration Successful';
-                $data['headline'] = 'Student has submitted registration form.';
+                $data['subject'] = 'Registration form recieved';
+                $data['headline'] = 'Student has submitted registration form';
                 $data['status'] = 'Pending';
                 $data['proposals'] = $projectData;
 
@@ -784,6 +784,8 @@ class ApiController extends Controller
                 } else if($params['action'] === 'proposal') {
 
                     $model = ProposalForm::find()->where(['id' => $params['id']])->one();
+
+                    $user = User::find()->where([ 'id' => $model->created_by])->one();
                 
                 }
 
@@ -802,22 +804,22 @@ class ApiController extends Controller
                     $statusArray[3] = 'Contact Us';
 
                     $emails['toEmail'] = 'ssalvi@ksu.edu.sa';
-                    // $emails['toEmail'] = $userData['email'];
-                    $emails['bccEmail'] = ['ssalvi@ksu.edu.sa'];
+                    $emails['bccEmail'] = ['ssalvi@ksu.edu.sa', 'mmeraj@sku.edu.sa'];
 
                     if($params['action'] === 'registration') {
 
                         $emails['toEmail'] = $userData['email'];
                         $userData['subject'] = 'Registration Status Update';
-                        $userData['headline'] = 'Your registration application status has updated';
+                        $userData['headline'] = 'Your application status has updated';
                         $userData['status'] = $statusArray[$userData['status']];
 
                         $model->_sendmail($userData, $emails);
 
                     } else if($params['action'] === 'proposal') {
-
-                        $userData['subject'] = 'Registration Status Update';
-                        $userData['headline'] = 'Your registration application status has updated';
+                        
+                        $emails['toEmail'] = $user->email;
+                        $userData['subject'] = 'Proposal form status update';
+                        $userData['headline'] = 'Your Proposal form status updated';
                         $userData['status'] = $statusArray[$userData['status']];
                         $model->_sendmail($userData, $emails);
                     

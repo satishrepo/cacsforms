@@ -122,7 +122,7 @@ class SignupForm extends Model
             $secrity,
             $port
         );
-        $ml->Subject = 'Registration Successful';
+        $ml->Subject = 'New User Registration OTP';
 
         $ml->SetFrom('admin@cacsforms.com');
 

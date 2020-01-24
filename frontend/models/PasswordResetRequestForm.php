@@ -91,7 +91,7 @@ class PasswordResetRequestForm extends Model
             $secrity,
             $port
         );
-        $ml->Subject = 'Forgot Password Request';
+        $ml->Subject = 'Your Forget Password OTP';
 
         $ml->SetFrom('admin@cacsforms.com');
 

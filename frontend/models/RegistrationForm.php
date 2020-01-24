@@ -146,7 +146,7 @@ class RegistrationForm extends \yii\db\ActiveRecord
         $body .= '<tr><td>Email </td><td>'.$userData['email'].'</td></tr>';
         $body .= '<tr><td>Mobile </td><td>'.$userData['mobile'].'</td></tr>';
         $body .= '<tr><td>GPA </td><td>'.$userData['gpa'].'</td></tr>';
-        if(is_array($userData['proposals'])) {
+        if(array_key_exists('proposals', $userData) && is_array($userData['proposals'])) {
             forEach($userData['proposals'] as $k => $p) {
                 $body .= '<tr><td>Proposal '.($k+1).' </td><td>'.$p.'</td></tr>';
             }
