@@ -471,8 +471,8 @@ class ApiController extends Controller
                 // $emails['ccEmail'] = 'mmeraj@ksu.edu.sa';
 
                 $emails['toEmail'] = $model->email;
-                // $emails['ccEmail'] = 'mmeraj@ksu.edu.sa';
-                $emails['bccEmail'] = ['salvi@ksu.edu.sa', 'mmeraj@ksu.edu.sa', 
+                $emails['ccEmail'] = ['mfaisal@ksu.edu.sa'];
+                $emails['bccEmail'] = ['sahyd@ksu.edu.sa', 'mmeraj@ksu.edu.sa', 
                     'satish.purohit.3@gmail.com'];
 
 
