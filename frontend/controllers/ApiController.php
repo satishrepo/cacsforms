@@ -21,6 +21,9 @@ use frontend\models\ResultForm;
 use frontend\models\CoursedropForm;
 use frontend\models\ReadmissionForm;
 use frontend\models\SemesterdropForm;
+use frontend\models\MasterForm;
+use frontend\models\CheatingForm;
+use frontend\models\TrainingForm;
 
 use Mpdf\Mpdf;
 
@@ -112,8 +115,6 @@ class ApiController extends Controller
 
             $dataProvider = $searchModel->search([]);
 
-
-
             $data =  $dataProvider->getModels();
 
             $users = [];
@@ -169,13 +170,9 @@ class ApiController extends Controller
 
             $model = new LoginForm();
 
-
-
             $model->username = isset($data['username']) ? $data['username'] : '';
 
             $model->password = isset($data['password']) ? $data['password'] : '';
-
-
 
             if($model->login()){
 
@@ -237,7 +234,6 @@ class ApiController extends Controller
             $data = Yii::$app->request->post();
 
             $model = new SignupForm();
-
 
             $model->username = isset($data['username']) ? $data['username'] : '';
 
@@ -414,17 +410,18 @@ class ApiController extends Controller
 
             $model->gpa = isset($data['gpa']) ? $data['gpa'] : '';
 
-            $model->project_1 = isset($data['project_1']) ? $data['project_1'] : null;
-            $model->project_2 = isset($data['project_2']) ? $data['project_2'] : null;
-            $model->project_3 = isset($data['project_3']) ? $data['project_3'] : null;
-            $model->project_4 = isset($data['project_4']) ? $data['project_4'] : null;
-            $model->project_5 = isset($data['project_5']) ? $data['project_5'] : null;
-            $model->project_6 = isset($data['project_6']) ? $data['project_6'] : null;
-            $model->project_7 = isset($data['project_7']) ? $data['project_7'] : null;
-            $model->project_8 = isset($data['project_8']) ? $data['project_8'] : null;
-            $model->project_9 = isset($data['project_9']) ? $data['project_9'] : null;
-            $model->project_10 = isset($data['project_10']) ? $data['project_10'] : null;
-            $model->project_11 = isset($data['project_11']) ? $data['project_11'] : null;
+        $projects = [];
+        $projects[] = $model->project_1 = isset($data['project_1']) ? $data['project_1'] : null;
+        $projects[] = $model->project_2 = isset($data['project_2']) ? $data['project_2'] : null;
+        $projects[] = $model->project_3 = isset($data['project_3']) ? $data['project_3'] : null;
+        $projects[] = $model->project_4 = isset($data['project_4']) ? $data['project_4'] : null;
+        $projects[] = $model->project_5 = isset($data['project_5']) ? $data['project_5'] : null;
+        $projects[] = $model->project_6 = isset($data['project_6']) ? $data['project_6'] : null;
+        $projects[] = $model->project_7 = isset($data['project_7']) ? $data['project_7'] : null;
+        $projects[] = $model->project_8 = isset($data['project_8']) ? $data['project_8'] : null;
+        $projects[] = $model->project_9 = isset($data['project_9']) ? $data['project_9'] : null;
+        $projects[] = $model->project_10 = isset($data['project_10']) ? $data['project_10'] : null;
+        $projects[] = $model->project_11 = isset($data['project_11']) ? $data['project_11'] : null; 
             
             $model->created_by = isset($data['user_id']) ? $data['user_id'] : null;
             $model->status = 0;
@@ -432,30 +429,17 @@ class ApiController extends Controller
             $proposalList = json_decode($this->actionProposal());
 
             // print_r($proposalList->data);exit;
-            $projectData = [];
+            $keyValue = [];
             foreach ($proposalList->data->projects as $key => $value) {
-                
-                if(
-                    (isset($data['project_1']) && $value->id == $model->project_1) 
-                    || (isset($data['project_2']) && $value->id == $model->project_2)
-                    || (isset($data['project_3']) && $value->id == $model->project_3)
-                    || (isset($data['project_4']) && $value->id == $model->project_4)
-                    || (isset($data['project_5']) && $value->id == $model->project_5)
-                    || (isset($data['project_6']) && $value->id == $model->project_6)
-                    || (isset($data['project_7']) && $value->id == $model->project_7)
-                    || (isset($data['project_8']) && $value->id == $model->project_8)
-                    || (isset($data['project_9']) && $value->id == $model->project_9)
-                    || (isset($data['project_10']) && $value->id == $model->project_10)
-                    || (isset($data['project_11']) && $value->id == $model->project_11)
-                    
-                ) 
-                {                    
-                    $projectData[] = $value->title .' ('.$value->instructor.')';
-                }
-
+                $keyValue[$value->id] = $value->title .' ('.$value->instructor.')';
             }
-            // print_r($projectData);exit;
-
+            $pdata = [];
+            forEach($projects as $k) { 
+              if($k) {
+                $pdata[] = $keyValue[$k];
+              }
+            }
+            
             if($model->save()){
 
                 // send mail to commette head
@@ -463,7 +447,7 @@ class ApiController extends Controller
                 $data['subject'] = 'Registration form recieved';
                 $data['headline'] = 'Student has submitted registration form';
                 $data['status'] = 'Pending';
-                $data['proposals'] = $projectData;
+                $data['proposals'] = $pdata;
 
                 $emails = [];
 
@@ -1306,6 +1290,330 @@ class ApiController extends Controller
         }
 
     }
+
+
+    public function actionSavemaster()
+    {
+
+        if(Yii::$app->request->post()){
+
+            $data = Yii::$app->request->post();
+
+            $model = new MasterForm();
+
+            $model->type = isset($data['type']) ? $data['type'] : '';
+
+            $model->name = isset($data['name']) ? $data['name'] : '';
+
+            $model->created_by = isset($data['user_id']) ? $data['user_id'] : null;
+
+
+            if($model->save()){
+
+                return json_encode(Generic::getHeader([
+
+                    'isSuccessful'=>true,
+
+                    'statusCode' => 200,
+
+                    'data'=> [
+
+                        'details'=>['message' => 'Details saved successfully', 'name'=>$model->name]
+
+                    ]
+
+                ]));
+
+            }else{
+
+                return json_encode(Generic::getHeader([
+
+                    'isSuccessful'=>true,
+
+                    'statusCode' => 417,
+
+                    'data'=> [
+
+                        'errors' => $model->errors
+
+                    ]
+
+                ]));
+
+            }
+
+        }
+
+    }
+
+
+    public function actionSavecheating()
+    {
+
+        if(Yii::$app->request->post()){
+
+            $data = Yii::$app->request->post();
+
+            $model = new CheatingForm();
+
+            $model->student_id = isset($data['student_id']) ? $data['student_id'] : '';
+
+            $model->name = isset($data['name']) ? $data['name'] : '';
+
+            $model->exam_type = isset($data['exam_type']) ? $data['exam_type'] : '';
+
+            $model->semester_type = isset($data['semester_type']) ? $data['semester_type'] : '';
+
+            $model->academic_year = isset($data['academic_year']) ? $data['academic_year'] : '';
+
+            $model->date = isset($data['date']) ? $data['date'] : '';
+
+            $model->course_code = isset($data['course_code']) ? $data['course_code'] : '';
+
+            $model->course_name = isset($data['course_name']) ? $data['course_name'] : '';
+
+            $model->section = isset($data['section']) ? $data['section'] : '';
+
+            $model->exam_room_no = isset($data['exam_room_no']) ? $data['exam_room_no'] : '';
+
+            $model->case_desc = isset($data['case_desc']) ? $data['case_desc'] : '';
+
+            $model->supervisor_name = isset($data['supervisor_name']) ? $data['supervisor_name'] : '';
+
+            $model->invigilator_1 = isset($data['invigilator_1']) ? $data['invigilator_1'] : '';
+
+            $model->invigilator_2 = isset($data['invigilator_2']) ? $data['invigilator_2'] : '';
+
+            $model->created_by = isset($data['user_id']) ? $data['user_id'] : null;
+
+
+            if($model->save()){
+
+                $emails = [];
+                $userData = $model->attributes;
+                $emails['toEmail'] = 'salvi@ksu.edu.sa';
+                $emails['bccEmail'] = ['mmeraj@sku.edu.sa'];
+                $userData['subject'] = 'Cheating Form';
+                $userData['headline'] = 'Cheating Form Submitted';
+
+                $model->_sendmail($userData, $emails);
+
+
+                return json_encode(Generic::getHeader([
+
+                    'isSuccessful'=>true,
+
+                    'statusCode' => 200,
+
+                    'data'=> [
+
+                        'details'=>['message' => 'Details saved successfully', 'student_id'=>$model->student_id]
+                    ]
+
+                ]));
+
+            }else{
+
+                return json_encode(Generic::getHeader([
+
+                    'isSuccessful'=>true,
+
+                    'statusCode' => 417,
+
+                    'data'=> [
+
+                        'errors' => $model->errors
+
+                    ]
+
+                ]));
+
+            }
+
+        }
+
+    }
+
+    public function actionMasterlist() {
+
+        $params = Yii::$app->request->post();
+
+        
+        if(!array_key_exists('type', $params)) {
+
+            return json_encode(Generic::getHeader([
+
+                        'isSuccessful'=>true,
+
+                        'statusCode' => 417,
+
+                        'data'=> [
+
+                            'errors' => [ 'message' => [['please provide type']]] 
+
+                        ]
+
+                    ]));
+        }
+        
+
+        if(isset($params['user_id'])) {
+            $proposals = MasterForm::find()->where([
+                'created_by' => $params['user_id'],
+                'type' => $params['type']
+            ])->all();
+        } else {
+            $proposals = MasterForm::find()->where(['type' => $params['type']])->all();
+        }
+
+        $records = [];
+
+        foreach ($proposals as $value) {
+
+            $row = $value->attributes;
+            
+            unset(
+                $row['created_on'], 
+                $row['created_by'], 
+                $row['updated_on'], 
+                $row['updated_by']
+            );   
+
+            $records[] = $row;
+        }
+
+        return json_encode(Generic::getHeader([
+
+                'isSuccessful'=>true,
+
+                'statusCode' => 200,
+
+                'data'=> [
+
+                    'projects' => $records
+
+                ]
+
+            ]));
+    }
+
+
+    public function actionCheatinglist() {
+
+        $params = Yii::$app->request->post();
+
+
+        if(isset($params['user_id'])) {
+            $proposals = CheatingForm::find()->where([
+                'created_by' => $params['user_id']
+            ])->all();
+        } else {
+            $proposals = CheatingForm::find()->all();
+        }
+
+        $records = [];
+
+        foreach ($proposals as $value) {
+
+            $row = $value->attributes;
+            
+            unset(
+                $row['created_on'], 
+                $row['created_by'], 
+                $row['updated_on'], 
+                $row['updated_by']
+            );   
+
+            $records[] = $row;
+        }
+
+        return json_encode(Generic::getHeader([
+
+                'isSuccessful'=>true,
+
+                'statusCode' => 200,
+
+                'data'=> [
+
+                    'projects' => $records
+
+                ]
+
+            ]));
+    }
+
+
+    public function actionSavetraining()
+    {
+
+        if(Yii::$app->request->post()){
+
+            $data = Yii::$app->request->post();
+
+            $model = new TrainingForm();
+
+            $model->student_id = isset($data['student_id']) ? $data['student_id'] : '';
+
+            $model->name = isset($data['name']) ? $data['name'] : '';
+
+            $model->mobile_no = isset($data['mobile_no']) ? $data['mobile_no'] : '';
+
+            $model->email = isset($data['email']) ? $data['email'] : '';
+
+            $model->passed_hours = isset($data['passed_hours']) ? $data['passed_hours'] : '';
+
+            $model->remaining_hours = isset($data['remaining_hours']) ? $data['remaining_hours'] : '';
+
+            $model->created_by = isset($data['user_id']) ? $data['user_id'] : null;
+
+
+            if($model->save()){
+
+                $emails = [];
+                $userData = $model->attributes;
+                $emails['toEmail'] = 'salvi@ksu.edu.sa';
+                $emails['ccEmail'] = ['mmeraj@sku.edu.sa'];
+                $userData['subject'] = 'Cheating Form';
+                $userData['headline'] = 'Cheating Form Submitted';
+
+                $model->_sendmail($userData, $emails);
+
+
+                return json_encode(Generic::getHeader([
+
+                    'isSuccessful'=>true,
+
+                    'statusCode' => 200,
+
+                    'data'=> [
+
+                        'details'=>['message' => 'Details saved successfully', 'student_id'=>$model->student_id]
+                    ]
+
+                ]));
+
+            }else{
+
+                return json_encode(Generic::getHeader([
+
+                    'isSuccessful'=>true,
+
+                    'statusCode' => 417,
+
+                    'data'=> [
+
+                        'errors' => $model->errors
+
+                    ]
+
+                ]));
+
+            }
+
+        }
+
+    }
+
 
     public function actionPdf(){
         
